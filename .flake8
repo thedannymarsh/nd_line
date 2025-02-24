@@ -9,4 +9,4 @@ max-line-length = 120
 max-complexity = 18
 select = B,C,E,F,W,T4,SIM,RST,D,T1,FS,DAR,ANN
 per-file-ignores =
-    tests/*:ANN
+    tests/*:ANN,D102

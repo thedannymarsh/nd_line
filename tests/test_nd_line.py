@@ -33,7 +33,7 @@ class Test2D:
         """Test the closest point function calculation."""
         halfway = self.line.points.shape[0] // 2
         close_pt = self.line.points[halfway].copy()
-        dists = self.line.dist_from(close_pt)
+        dists = self.line.dists_from_point(close_pt)
         assert dists[halfway] == 0.0
 
     def test_closest(self):
@@ -155,7 +155,7 @@ class Test10D:
         """Test the closest point function calculation."""
         halfway = self.line.points.shape[0] // 2
         close_pt = self.line.points[halfway].copy()
-        dists = self.line.dist_from(close_pt)
+        dists = self.line.dists_from_point(close_pt)
         assert dists[halfway] == 0.0
 
     def test_closest(self):
@@ -198,6 +198,7 @@ class TestSpline2D:
         init_err = true_len - self.spline.length
         up_spline = self.spline.recursive_upsample(tol=tol)
         import matplotlib.pyplot as plt
+
         plt.plot()
         fin_err = true_len - up_spline.length
         err_pct = (init_err - fin_err) / init_err
@@ -209,7 +210,7 @@ class TestSpline2D:
         np.testing.assert_allclose(up_spline.interp(np.pi / 2), [2, 3], atol=0.001, rtol=0.001)
 
     def test_interp_rat(self):
-        np.testing.assert_allclose(self.spline.interp_rat(1/3), [2, 3])
+        np.testing.assert_allclose(self.spline.interp_rat(1 / 3), [2, 3])
 
 
 if __name__ == '__main__':

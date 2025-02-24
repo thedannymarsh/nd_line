@@ -76,13 +76,14 @@ uu = np.linspace(0, np.pi, 8)
 points = np.array([np.cos(uu), np.sin(uu)]).T
 
 nds = nd_spline(points)
-halfway_point = nds.interp_rat(1.5) # [0, 1]
+halfway_point = nds.interp_rat(1.5)  # [0, 1]
 
 # Length of a semicircle with radius=1 should be pi
-nds.length # Not close to pi because points are sparse
-upsampled_spline = nds.recursive_upsample() # upsample to estimate spline arc length with Euclidean arc length
-upsampled_spline.length # Close to pi
+nds.length  # Not close to pi because points are sparse
+upsampled_spline = (
+    nds.recursive_upsample()
+)  # upsample to estimate spline arc length with Euclidean arc length
+upsampled_spline.length  # Close to pi
 ```
 
 ### Notes
-
