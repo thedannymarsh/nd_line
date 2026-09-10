@@ -26,7 +26,7 @@ class Test2D:
 
     def test_length(self):
         """Test the line length calculation."""
-        assert self.line.length == 51.784153048659896
+        np.testing.assert_allclose(self.line.length, 51.784153048659896)
 
     def test_interp(self):
         """Test interpolation at half distance."""
@@ -69,7 +69,7 @@ class Test10D:
 
     def test_length(self):
         """Test the line length calculation."""
-        assert self.line.length == 126.77686142601377
+        np.testing.assert_allclose(self.line.length, 126.77686142601377)
 
     def test_interp(self):
         """Test interpolation at half distance."""
