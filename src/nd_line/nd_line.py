@@ -26,14 +26,14 @@ class nd_line:
     @property
     def points(self) -> ndarray:
         """Input points from which the line was constructed."""
-        return self._points
+        return self._points  # noqa: DAR201
 
     @property
     def lengths(self) -> ndarray:
         """Euclidean distance between each point along the line.
 
         Returns vector of length nd_line.points - 1.
-        """
+        """  # noqa: DAR201
         return np.array([self.e_dist(self.points[i], self.points[i + 1]) for i in range(len(self.points) - 1)])
 
     @property
@@ -41,7 +41,7 @@ class nd_line:
         """Sum of the Euclidean distance between each point along the line.
 
         Identical to nd_line.cumul[-1].
-        """
+        """  # noqa: DAR201
         return sum(self.lengths)
 
     @property
@@ -49,7 +49,7 @@ class nd_line:
         """Cumulative Euclidean distance between each point along the line.
 
         Same length as nd_line.points.
-        """
+        """  # noqa: DAR201
         return np.concatenate(([0.0], np.cumsum(self.lengths)))
 
     def interp(self, dist: float) -> ndarray:
