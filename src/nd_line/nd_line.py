@@ -80,7 +80,7 @@ class nd_line:
         """
         if samples is None:
             samples = len(self.points)
-        tck, u, _, _, _ = splprep([self.points[:, i] for i in range(self.points.shape[1])], s=s)
+        tck, __dict__ = splprep([self.points[:, i] for i in range(self.points.shape[1])], s=s)
         self.points = np.transpose(splev(np.linspace(0, 1, num=samples), tck))
         self.length = self._length(self.points)
         self.type = 'spline'
