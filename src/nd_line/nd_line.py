@@ -20,28 +20,37 @@ class nd_line:
 
         :param points: list of points
         """
-        self.points = np.array([tuple(x) for x in points])
-        alldist = self._lengths(self.points)
-        self.length = sum(alldist)
-        self.cumul: ndarray = np.cumsum([0.0] + alldist)
+        self._points = np.array([tuple(x) for x in points])
         self.type = 'linear'
 
-    def _lengths(self, points: ndarray) -> list[float]:
-        """Calculate the length (sum of the euclidean distance between points).
+    @property
+    def points(self) -> ndarray:
+        """Input points from which the line was constructed."""
+        return self._points  # noqa: DAR201
 
-        :param points: numpy array of points
-        :return: length of the line
-        """
-        return [self.e_dist(points[i], points[i + 1]) for i in range(len(points) - 1)]
+    @property
+    def lengths(self) -> ndarray:
+        """Euclidean distance between each point along the line.
 
-    def _length(self, points: ndarray) -> float:
-        """Calculate the length (sum of the euclidean distance between points).
+        Returns vector of length nd_line.points - 1.
+        """  # noqa: DAR201
+        return np.array([self.e_dist(self.points[i], self.points[i + 1]) for i in range(len(self.points) - 1)])
 
-        :param points: numpy array of points
-        :type points: ndarray
-        :return: length of the line
-        """
-        return sum([self.e_dist(points[i], points[i + 1]) for i in range(len(points) - 1)])
+    @property
+    def length(self) -> float:
+        """Sum of the Euclidean distance between each point along the line.
+
+        Identical to nd_line.cumul[-1].
+        """  # noqa: DAR201
+        return sum(self.lengths)
+
+    @property
+    def cumul(self) -> ndarray:
+        """Cumulative Euclidean distance between each point along the line.
+
+        Same length as nd_line.points.
+        """  # noqa: DAR201
+        return np.concatenate(([0.0], np.cumsum(self.lengths)))
 
     def interp(self, dist: float) -> ndarray:
         """Return a point a specified distance along the line.
@@ -81,8 +90,7 @@ class nd_line:
         if samples is None:
             samples = len(self.points)
         tck, u, _, _, _ = splprep([self.points[:, i] for i in range(self.points.shape[1])], s=s)
-        self.points = np.transpose(splev(np.linspace(0, 1, num=samples), tck))
-        self.length = self._length(self.points)
+        self._points = np.transpose(splev(np.linspace(0, 1, num=samples), tck))
         self.type = 'spline'
 
     @staticmethod
