@@ -4,7 +4,6 @@ Copyright Daniel Marshall
 """
 
 import math
-from typing import Optional
 
 import numpy as np
 from numpy import ndarray
@@ -81,7 +80,7 @@ class nd_line:
         assert ratio <= 1, "Ratio for interp_rat() must be a value from 0 to 1"
         return self.interp(ratio * self.length)
 
-    def splineify(self, samples: Optional[int] = None, s: float = 0) -> None:
+    def splineify(self, samples: int | None = None, s: float = 0) -> None:
         """Turn line into a spline approximation, currently occurs in place.
 
         :param samples: number of samples to use for spline approximation
@@ -89,7 +88,7 @@ class nd_line:
         """
         if samples is None:
             samples = len(self.points)
-        tck, u, _, _, _ = splprep([self.points[:, i] for i in range(self.points.shape[1])], s=s)
+        tck, _ = splprep([self.points[:, i] for i in range(self.points.shape[1])], s=s)
         self._points = np.transpose(splev(np.linspace(0, 1, num=samples), tck))
         self.type = 'spline'
 
