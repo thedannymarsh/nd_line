@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "nd_line"
-version = "0.2.0"  # This is the only place version should be hard coded
+version = "0.2.1"  # This is the only place version should be hard coded
 authors = [
   { name="Daniel Marshall", email="dpm42@duke.edu" },
 ]
