@@ -1,8 +1,6 @@
 # nd_line
 
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/thedannymarsh/nd_line)
-[![Stars](https://img.shields.io/github/stars/thedannymarsh/nd_line.svg)](https://github.com/thedannymarsh/nd_line/stargazers)
-[![CI](https://github.com/thedannymarsh/nd_line/actions/workflows/python-package.yml/badge.svg?branch=main)](https://github.com/thedannymarsh/nd_line/actions/workflows/python-package.yml?query=branch%3Amain)
 [![PyPI](https://img.shields.io/pypi/v/nd_line.svg)](https://pypi.org/project/nd_line/)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/nd_line?period=month&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads/month)](https://pepy.tech/projects/nd_line)
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/nd_line?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/nd_line)
