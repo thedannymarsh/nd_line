@@ -189,7 +189,7 @@ class Test3D:
     """Test a three-dimensional polyline."""
 
     def setup_method(self):
-        """Unit steps along x, then y, then z."""
+        """Setup unit steps along x, then y, then z."""
         self.points = np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [1.0, 1.0, 0.0], [1.0, 1.0, 1.0]])
         self.line = nd_line(self.points)
 
