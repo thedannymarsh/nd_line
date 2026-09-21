@@ -40,4 +40,7 @@ halfway_point = ln.interp_rat(0.5)
 
 ### Notes
 
-Currently points must be sampled one at a time, future version will allow interpolation of a list of distances along the line
+`interp` and `interp_rat` currently accept a single distance or ratio at a time.
+Batch interpolation of a list of distances is planned for a future version.
+
+See the [changelog](CHANGELOG.md) for release history.
