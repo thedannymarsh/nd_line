@@ -223,8 +223,8 @@ class TestEDist:
         np.testing.assert_allclose(nd_line.e_dist(a, b), math.hypot(*(b - a)))
 
 
-class TestSplineify:
-    """Tests for in-place spline approximation."""
+class TestToSpline:
+    """Tests for spline approximation."""
 
     def setup_method(self):
         """Enough points for a cubic spline (k=3)."""
@@ -239,30 +239,37 @@ class TestSplineify:
         )
         self.line = nd_line(self.points)
 
+    def test_original_unchanged(self):
+        """The original line is not modified."""
+        original_points = self.line.points.copy()
+        original_length = self.line.length
+        self.line.to_spline()
+        np.testing.assert_array_equal(self.line.points, original_points)
+        assert self.line.type == 'linear'
+        assert self.line.length == original_length
+
     def test_default_keeps_point_count(self):
         """Default samples equals the original number of points."""
-        self.line.splineify()
-        assert self.line.points.shape[0] == len(self.points)
-        assert self.line.type == 'spline'
+        spline = self.line.to_spline()
+        assert spline.points.shape[0] == len(self.points)
+        assert spline.type == 'spline'
 
     def test_custom_sample_count(self):
         """Samples sets the number of points on the new polyline."""
-        self.line.splineify(samples=12)
-        assert self.line.points.shape == (12, 2)
-        assert self.line.type == 'spline'
+        spline = self.line.to_spline(samples=12)
+        assert spline.points.shape == (12, 2)
+        assert spline.type == 'spline'
 
     def test_endpoints_preserved(self):
         """S=0 spline interpolation keeps the first and last points."""
-        self.line.splineify()
-        np.testing.assert_allclose(self.line.points[0], self.points[0], atol=1e-15)
-        np.testing.assert_allclose(self.line.points[-1], self.points[-1], atol=1e-15)
+        spline = self.line.to_spline()
+        np.testing.assert_allclose(spline.points[0], self.points[0], atol=1e-15)
+        np.testing.assert_allclose(spline.points[-1], self.points[-1], atol=1e-15)
 
     def test_length_is_refreshed(self):
-        """Length is recomputed from the new points."""
-        self.line.splineify(samples=20)
-        recomputed = sum(
-            nd_line.e_dist(self.line.points[i], self.line.points[i + 1]) for i in range(len(self.line.points) - 1)
-        )
-        np.testing.assert_allclose(self.line.length, recomputed)
-        np.testing.assert_allclose(self.line.interp(0.0), self.line.points[0])
-        np.testing.assert_allclose(self.line.interp(self.line.length), self.line.points[-1])
+        """Length is computed from the new points."""
+        spline = self.line.to_spline(samples=20)
+        recomputed = sum(nd_line.e_dist(spline.points[i], spline.points[i + 1]) for i in range(len(spline.points) - 1))
+        np.testing.assert_allclose(spline.length, recomputed)
+        np.testing.assert_allclose(spline.interp(0.0), spline.points[0])
+        np.testing.assert_allclose(spline.interp(spline.length), spline.points[-1])

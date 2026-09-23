@@ -4,6 +4,7 @@ Copyright Daniel Marshall
 """
 
 import math
+from functools import cached_property
 
 import numpy as np
 from numpy import ndarray
@@ -27,7 +28,7 @@ class nd_line:
         """Input points from which the line was constructed."""
         return self._points  # noqa: DAR201
 
-    @property
+    @cached_property
     def lengths(self) -> ndarray:
         """Euclidean distance between each point along the line.
 
@@ -35,7 +36,7 @@ class nd_line:
         """  # noqa: DAR201
         return np.array([self.e_dist(self.points[i], self.points[i + 1]) for i in range(len(self.points) - 1)])
 
-    @property
+    @cached_property
     def length(self) -> float:
         """Sum of the Euclidean distance between each point along the line.
 
@@ -43,7 +44,7 @@ class nd_line:
         """  # noqa: DAR201
         return sum(self.lengths)
 
-    @property
+    @cached_property
     def cumul(self) -> ndarray:
         """Cumulative Euclidean distance between each point along the line.
 
@@ -80,17 +81,19 @@ class nd_line:
         assert ratio <= 1, "Ratio for interp_rat() must be a value from 0 to 1"
         return self.interp(ratio * self.length)
 
-    def splineify(self, samples: int | None = None, s: float = 0) -> None:
-        """Turn line into a spline approximation, currently occurs in place.
+    def to_spline(self, samples: int | None = None, s: float = 0) -> 'nd_line':
+        """Return a new line from a spline approximation of this line.
 
         :param samples: number of samples to use for spline approximation
         :param s: smoothing factor for spline approximation
+        :return: new nd_line sampled from the spline
         """
         if samples is None:
             samples = len(self.points)
         tck, _ = splprep([self.points[:, i] for i in range(self.points.shape[1])], s=s)
-        self._points = np.transpose(splev(np.linspace(0, 1, num=samples), tck))
-        self.type = 'spline'
+        line = nd_line(np.transpose(splev(np.linspace(0, 1, num=samples), tck)))
+        line.type = 'spline'
+        return line
 
     @staticmethod
     def e_dist(a: ndarray, b: ndarray) -> float:
