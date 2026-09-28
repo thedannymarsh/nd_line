@@ -18,7 +18,7 @@ Interpolate points on an n-dimensional line by euclidean arc length.
 
 - `ln.interp_rat(ratio)`: ratio should be a value between 0 and 1, returns a value ratio*length along the line
 
-- `ln.splineify(samples)`: returns a new line sampled from a spline fit; `samples` is the number of points on the new line (defaults to the original count)
+- `ln.to_spline(samples)`: returns a **new** `nd_line` sampled from a spline fit (does not mutate in place); `samples` is the number of points on the new line (defaults to the original count)
 
 #### Attributes
 
