@@ -21,12 +21,17 @@ class nd_line:
         :param points: list of points
         """
         self._points = np.array([tuple(x) for x in points])
-        self.type = 'linear'
+        self._type = 'linear'
 
     @property
     def points(self) -> ndarray:
         """Input points from which the line was constructed."""
         return self._points  # noqa: DAR201
+
+    @property
+    def type(self) -> str:
+        """Whether the line is linear or sampled from a spline."""
+        return self._type  # noqa: DAR201
 
     @cached_property
     def lengths(self) -> ndarray:
@@ -92,7 +97,7 @@ class nd_line:
             samples = len(self.points)
         tck, _ = splprep([self.points[:, i] for i in range(self.points.shape[1])], s=s)
         line = nd_line(np.transpose(splev(np.linspace(0, 1, num=samples), tck)))
-        line.type = 'spline'
+        line._type = 'spline'
         return line
 
     @staticmethod
