@@ -6,7 +6,7 @@
 [![PyPI Downloads](https://static.pepy.tech/personalized-badge/nd_line?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/nd_line)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/nd_line.svg)](https://pypi.org/project/nd_line/)
 
-Interpolate points on an n-dimensional line by euclidean arc length.
+Interpolate points on an n-dimensional line by Euclidean arc length.
 
 ### Installation
 
@@ -14,9 +14,9 @@ Interpolate points on an n-dimensional line by euclidean arc length.
 
 #### Methods
 
-- `ln.interp(dist)`: returns a point dist length along the arc of the line
+- `ln.interp(dist)`: returns the point `dist` along the arc of the line
 
-- `ln.interp_rat(ratio)`: ratio should be a value between 0 and 1, returns a value ratio*length along the line
+- `ln.interp_rat(ratio)`: `ratio` is between 0 and 1; returns the point at `ratio * length`
 
 - `ln.to_spline(samples)`: returns a **new** `nd_line` sampled from a spline fit (does not mutate in place); `samples` is the number of points on the new line (defaults to the original count)
 
@@ -24,18 +24,31 @@ Interpolate points on an n-dimensional line by euclidean arc length.
 
 - `ln.points`: the points of the line
 - `ln.length`: the length of the line
-- `ln.type`: linear if not spline approximated, spline otherwise
+- `ln.lengths`: Euclidean length of each segment (array of len(points) - 1)
+- `ln.cumul`: cumulative arc length at each point (starts at 0.0, ends at ln.length)
+- `ln.type`: `'linear'` unless created by `to_spline`, then `'spline'` (read-only)
 
 #### Example
 
 ```python
 from nd_line.nd_line import nd_line
-import numpy as np
 
-ln = nd_line(np.array([[0, 0, 0], [1, 1, 1], [2, 2, 2]]))
-interpolated_point = ln.interp(1.5)
-line_length = ln.length
-halfway_point = ln.interp_rat(0.5)
+# 3-4-5 polyline
+ln = nd_line([[0, 0], [3, 0], [3, 4]])
+ln.type  # 'linear'
+ln.length  # 7.0
+ln.lengths  # array([3., 4.])
+ln.cumul  # array([0., 3., 7.])
+ln.interp(1.5)  # array([1.5, 0. ])
+ln.interp(5.0)  # array([3., 2.])
+ln.interp_rat(0.5)  # midpoint by arc length
+
+# spline fit needs at least 4 points (cubic); original line is unchanged
+ln = nd_line([[0, 0], [1, 0.5], [2, 0], [3, -0.5], [4, 0]])
+spline = ln.to_spline(samples=20)
+spline.type  # 'spline'
+spline.points.shape  # (20, 2)
+ln.type  # still 'linear'
 ```
 
 ### Notes
