@@ -19,56 +19,40 @@ Interpolate points on an n-dimensional line by Euclidean arc length.
 
 #### Methods
 
-##### Utilities
+- `ln.interp(dist)`: returns the point `dist` along the arc of the line
 
-- `nd_line.dist_from(point)`: returns the distance from all ndl points to the given point.
+- `ln.interp_rat(ratio)`: `ratio` is between 0 and 1; returns the point at `ratio * length`
 
-- `nd_line.closest_idx(point)`: returns the index of the closest of nd_line.points to the given point.
+- `ln.to_spline(samples)`: returns a **new** `nd_spline` sampled from a spline fit (does not mutate in place); `samples` is the number of points on the new line (defaults to the original count)
 
-- `nd_line.within_idx(point, dist)`: returns the indices of all nd_line.points within distance of the given point.
+- `ln.dist_from(point)`: returns the distance from all line points to the given point
 
-- `nd_line.contig_within_idx(point, dist)`: same as within_idx, but indices are consecutive and include the closest point.
+- `ln.closest_idx(point)`: returns the index of the closest point
 
-##### Linear Interpolation
+- `ln.within_idx(point, dist)`: returns the indices of all points within `dist` of the given point
 
-- `nd_line.interp(dist)`: returns a point(s) dist(s) length along the Euclidean arc of the line
+- `ln.contig_within_idx(point, dist)`: same as `within_idx`, but indices are consecutive and include the closest point
 
-- `nd_line.interp_rat(ratio)`: ratio(s) should be a value between 0 and 1, returns a value ratio*length along the line
+- `ln.resample(dists)`: returns a new `nd_line` with points interpolated at the given distances
 
-- `nd_line.resample(dists)`: generates a new nd_line object with points interpolated from the original nd_line.
+- `nd_spline.recursive_upsample(tol)`: returns a new `nd_spline` upsampled until the Euclidean arc length is within `tol`
 
-##### Spline Interpolation
-
-- `nd_line.to_spline(samples)`: generates a new nd_spline from the nd_line points, use samples to specify how many points will be sampled from the splines to generate the new line.
-
-- `nd_spline.recursive_upsample(tol)`: generates a new nd_spline by upsampling the spline until the Euclidean arc length asymptotes. use tol to specify the proportional length difference at which to stop upsampling.
-
-- `nd_spline.interp_rat(ratio)`: same as nd_line.interp_rat except using the spline with scipy.interpolate.splev.
-
-- `nd_spline.interp(dist)`: same as nd_line.interp except using the spline. _recommended to use nds.recursive_upsample before interpolating distances._
-
-- `nd_spline.resample(dists)`: same as nd_line.resample except using the spline. _recommended to use nds.recursive_upsample before interpolating distances._
+- `nd_spline.resample(dists)`: same as `ln.resample`, evaluated on the spline
 
 #### Attributes
 
-##### nd_line and nd_spline
-
-- `nd_line.points`: the points of the line
-- `nd_line.length`: the length of the line computed as Euclidean distance between points
-- `nd_line.lengths`: Euclidean length of each segment (array of len(points) - 1)
-- `nd_line.cumul`: cumulative arc length at each point (starts at 0.0, ends at length)
-- `nd_line.type`: `'linear'` for `nd_line`, `'spline'` for `nd_spline`
-
-##### nd_spline only
-
+- `ln.points`: the points of the line
+- `ln.length`: the length of the line
+- `ln.lengths`: Euclidean length of each segment (array of len(points) - 1)
+- `ln.cumul`: cumulative arc length at each point (starts at 0.0, ends at ln.length)
+- `ln.type`: `'linear'` unless created by `to_spline` or `nd_spline`, then `'spline'` (read-only)
 - `nd_spline.tck`: the knots, coefficients, and degree of the spline
 - `nd_spline.u`: the underlying parameter of the spline from 0 (first point) to 1 (last point)
 
-#### nd_line Example
+#### Example
 
 ```python
 from nd_line.nd_line import nd_line
-import numpy as np
 
 # 3-4-5 polyline
 ln = nd_line([[0, 0], [3, 0], [3, 4]])
@@ -76,9 +60,17 @@ ln.type  # 'linear'
 ln.length  # 7.0
 ln.lengths  # array([3., 4.])
 ln.cumul  # array([0., 3., 7.])
-ln.interp(1.5)  # array([1.5, 0.])
+ln.interp(1.5)  # array([1.5, 0. ])
 ln.interp([0.5, 1.5])  # one point per distance
+ln.interp(5.0)  # array([3., 2.])
 ln.interp_rat(0.5)  # midpoint by arc length
+
+# spline fit needs at least 4 points (cubic); original line is unchanged
+ln = nd_line([[0, 0], [1, 0.5], [2, 0], [3, -0.5], [4, 0]])
+spline = ln.to_spline(samples=20)
+spline.type  # 'spline'
+spline.points.shape  # (20, 2)
+ln.type  # still 'linear'
 ```
 
 #### nd_spline Example

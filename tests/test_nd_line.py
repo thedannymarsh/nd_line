@@ -376,9 +376,8 @@ class TestToSpline:
         spline = self.line.to_spline(samples=20)
         recomputed = sum(nd_line.e_dist(spline.points[i], spline.points[i + 1]) for i in range(len(spline.points) - 1))
         np.testing.assert_allclose(spline.length, recomputed)
-        # nd_spline.interp evaluates the spline, so knot values match within float error
-        np.testing.assert_allclose(spline.interp(0.0), spline.points[0], atol=1e-12)
-        np.testing.assert_allclose(spline.interp(spline.length), spline.points[-1], atol=1e-12)
+        np.testing.assert_allclose(spline.interp(0.0), spline.points[0])
+        np.testing.assert_allclose(spline.interp(spline.length), spline.points[-1])
 
 
 if __name__ == '__main__':
