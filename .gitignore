@@ -1,2 +1,21 @@
-dist
-.idea
+# Packaging / IDE
+dist/
+build/
+*.egg-info/
+.eggs/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+
+# Testing / type checkers
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/

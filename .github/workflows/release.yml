@@ -1,0 +1,68 @@
+name: release
+
+# PSR on GitHub (version, changelog, tag, GitHub Release, PyPI).
+# Invoked from python-package.yml after tests succeed on main.
+
+on:
+  workflow_call:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  semantic-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require GH_TOKEN and PYPI_TOKEN
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          set -euo pipefail
+          missing=0
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "GH_TOKEN secret is required: a PAT that can push to protected main." >&2
+            echo "GITHUB_TOKEN is not used; it cannot bypass branch protection." >&2
+            missing=1
+          fi
+          if [ -z "${PYPI_TOKEN}" ]; then
+            echo "PYPI_TOKEN secret is required before releasing (Twine upload to PyPI)." >&2
+            missing=1
+          fi
+          if [ "${missing}" -ne 0 ]; then
+            exit 1
+          fi
+
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Python Semantic Release
+        id: release
+        uses: python-semantic-release/python-semantic-release@v10.6.2
+        with:
+          github_token: ${{ secrets.GH_TOKEN }}
+          verbosity: 2
+
+      # PSR Docker action writes dist/ as root; fix ownership for the host runner.
+      - name: Fix dist permissions
+        if: steps.release.outputs.released == 'true'
+        run: sudo chown -R "$(id -u):$(id -g)" dist/
+
+      - name: Publish to PyPI
+        if: steps.release.outputs.released == 'true'
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          set -euo pipefail
+          python -m pip install twine
+          twine upload dist/*
